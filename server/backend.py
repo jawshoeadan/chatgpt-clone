@@ -80,10 +80,16 @@ class Backend_Api:
             #     stream  = True
             # )
 
+            print(self.token)
+            print(prompt)
             
-            response = forefront.Completion.create(token=self.token, prompt=prompt)
-            print(response)
-            return response.text
+            def stream():
+                for response in forefront.StreamingCompletion.create(token=self.token, prompt=str(conversation), model='gpt-4'):
+                    if response != None:
+                        yield response.text
+                        print(response.text, end='')
+            #print(response)
+            
             # def stream():
             #     for chunk in gpt_resp.iter_lines():
             #         try:
@@ -101,7 +107,7 @@ class Backend_Api:
             #             print(e.__traceback__.tb_next)
             #             continue
                         
-            # return self.app.response_class(stream(), mimetype='text/event-stream')
+            return self.app.response_class(stream(), mimetype='text/event-stream')
 
         except Exception as e:
             print(e)
