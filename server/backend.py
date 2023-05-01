@@ -82,7 +82,7 @@ class Backend_Api:
 
             
             response = forefront.Completion.create(token=self.token, prompt=prompt)
-            print(response.text)
+            print(response)
             return response.text
             # def stream():
             #     for chunk in gpt_resp.iter_lines():

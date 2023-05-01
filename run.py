@@ -15,7 +15,7 @@ if __name__ == '__main__':
             view_func = site.routes[route]['function'],
             methods   = site.routes[route]['methods'],
         )
-    tok = forefront.Account.create()
+    tok = forefront.Account.create(logging=True)
     backend_api  = Backend_Api(app, config, token=tok)
     for route in backend_api.routes:
         app.add_url_rule(
