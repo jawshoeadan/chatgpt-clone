@@ -13,7 +13,7 @@ from server.config import special_instructions
 
 
 class Backend_Api:
-    def __init__(self, app, config: dict) -> None:
+    def __init__(self, app, config: dict, token) -> None:
         self.app = app
         self.openai_key = os.getenv("OPENAI_API_KEY") or config['openai_key']
         self.openai_api_base = os.getenv("OPENAI_API_BASE") or config['openai_api_base']
@@ -24,6 +24,7 @@ class Backend_Api:
                 'methods': ['POST']
             }
         }
+        self.token = token
 
     def _conversation(self):
         try:
@@ -79,8 +80,8 @@ class Backend_Api:
             #     stream  = True
             # )
 
-            tok = forefront.Account.create()
-            response = forefront.Completion.create(token=tok, prompt=prompt)
+            
+            response = forefront.Completion.create(token=self.token, prompt=prompt)
             print(response.text)
             return response.text
             # def stream():
