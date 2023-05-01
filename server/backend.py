@@ -8,6 +8,7 @@ from requests import post
 from json     import loads
 import os
 
+from gpt4free import forefront
 from server.config import special_instructions
 
 
@@ -58,44 +59,48 @@ class Backend_Api:
             url = f"{self.openai_api_base}/v1/chat/completions"
 
             proxies = None
-            if self.proxy['enable']:
-                proxies = {
-                    'http': self.proxy['http'],
-                    'https': self.proxy['https'],
-                }
+            # if self.proxy['enable']:
+            #     proxies = {
+            #         'http': self.proxy['http'],
+            #         'https': self.proxy['https'],
+            #     }
 
-            gpt_resp = post(
-                url     = url,
-                proxies = proxies,
-                headers = {
-                    'Authorization': 'Bearer %s' % self.openai_key
-                }, 
-                json    = {
-                    'model'             : request.json['model'], 
-                    'messages'          : conversation,
-                    'stream'            : True
-                },
-                stream  = True
-            )
+            # gpt_resp = post(
+            #     url     = url,
+            #     proxies = proxies,
+            #     headers = {
+            #         'Authorization': 'Bearer %s' % self.openai_key
+            #     }, 
+            #     json    = {
+            #         'model'             : request.json['model'], 
+            #         'messages'          : conversation,
+            #         'stream'            : True
+            #     },
+            #     stream  = True
+            # )
 
-            def stream():
-                for chunk in gpt_resp.iter_lines():
-                    try:
-                        decoded_line = loads(chunk.decode("utf-8").split("data: ")[1])
-                        token = decoded_line["choices"][0]['delta'].get('content')
+            tok = forefront.Account.create()
+            response = forefront.Completion.create(token=tok, prompt=prompt)
+            print(response.text)
+            return response.text
+            # def stream():
+            #     for chunk in gpt_resp.iter_lines():
+            #         try:
+            #             # decoded_line = loads(chunk.decode("utf-8").split("data: ")[1])
+            #             # token = decoded_line["choices"][0]['delta'].get('content')
 
-                        if token != None: 
-                            yield token
+            #             if token != None: 
+            #                 yield token
                             
-                    except GeneratorExit:
-                        break
+            #         except GeneratorExit:
+            #             break
 
-                    except Exception as e:
-                        print(e)
-                        print(e.__traceback__.tb_next)
-                        continue
+            #         except Exception as e:
+            #             print(e)
+            #             print(e.__traceback__.tb_next)
+            #             continue
                         
-            return self.app.response_class(stream(), mimetype='text/event-stream')
+            # return self.app.response_class(stream(), mimetype='text/event-stream')
 
         except Exception as e:
             print(e)
