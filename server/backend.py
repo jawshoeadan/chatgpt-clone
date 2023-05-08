@@ -84,7 +84,7 @@ class Backend_Api:
             print(prompt)
             
             def stream():
-                for response in forefront.StreamingCompletion.create(token=self.token, prompt=str(conversation), model='gpt-4'):
+                for response in forefront.StreamingCompletion.create(account_data=self.token, prompt=str(conversation), model='gpt-4'):
                     if response != None:
                         yield response.text
                         print(response.text, end='')
